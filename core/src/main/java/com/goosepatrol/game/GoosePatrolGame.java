@@ -14,6 +14,7 @@ import com.goosepatrol.game.systems.BoundarySystem;
 import com.goosepatrol.game.systems.MapRenderSystem;
 import com.goosepatrol.game.systems.BuildingRenderSystem;
 import com.goosepatrol.game.systems.DecorationRenderSystem;
+import com.goosepatrol.game.systems.CampusCollisionSystem;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class GoosePatrolGame extends ApplicationAdapter {
@@ -39,6 +40,7 @@ public class GoosePatrolGame extends ApplicationAdapter {
 
         gameWorld.addSystem(new PlayerInputSystem());
         gameWorld.addSystem(new MovementSystem());
+        gameWorld.addSystem(new CampusCollisionSystem());
         gameWorld.addSystem(new BoundarySystem());
 
         EntityFactory entityFactory = new EntityFactory();

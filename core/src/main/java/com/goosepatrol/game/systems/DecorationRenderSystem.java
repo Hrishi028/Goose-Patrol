@@ -202,6 +202,66 @@ public class DecorationRenderSystem implements GameSystem {
             w * 0.83f, h * 0.25f,
             75 * s, 34 * s);
 
+
+        // =====================================
+        // TREES AROUND THE LAKE
+        // =====================================
+
+        // North side of the lake
+        batch.draw(tree4,
+            w * 0.62f, h * 0.78f,
+            75 * s, 85 * s);
+
+        // South-west side of the lake
+        batch.draw(tree4,
+            w * 0.54f, h * 0.48f,
+            65 * s, 75 * s);
+
+        // South-east side of the lake
+        batch.draw(tree4,
+            w * 0.79f, h * 0.47f,
+            65 * s, 75 * s);
+
+        // =====================================
+        // EXTRA CAMPUS FLOWERS
+        // =====================================
+
+        // Upper gardens
+        batch.draw(flowers1,
+            w * 0.08f, h * 0.73f,
+            75 * s, 35 * s);
+
+        batch.draw(flowers3,
+            w * 0.42f, h * 0.73f,
+            75 * s, 35 * s);
+
+        // Around the lake
+        batch.draw(flowers2,
+            w * 0.57f, h * 0.76f,
+            65 * s, 32 * s);
+
+        batch.draw(flowers4,
+            w * 0.82f, h * 0.49f,
+            70 * s, 35 * s);
+
+        // Lower gardens
+        batch.draw(flowers1,
+            w * 0.08f, h * 0.17f,
+            75 * s, 35 * s);
+
+        batch.draw(flowers3,
+            w * 0.36f, h * 0.18f,
+            75 * s, 35 * s);
+
+        batch.draw(flowers2,
+            w * 0.68f, h * 0.17f,
+            75 * s, 35 * s);
+
+        batch.draw(flowers4,
+            w * 0.86f, h * 0.18f,
+            75 * s, 35 * s);
+
+
         batch.end();
     }
 

@@ -30,3 +30,4 @@ public class GoosePatrolGame extends ApplicationAdapter {
         image.dispose();
     }
 }
+

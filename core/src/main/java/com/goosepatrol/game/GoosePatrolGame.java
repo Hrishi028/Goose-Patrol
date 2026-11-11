@@ -15,6 +15,9 @@ import com.goosepatrol.game.systems.MapRenderSystem;
 import com.goosepatrol.game.systems.BuildingRenderSystem;
 import com.goosepatrol.game.systems.DecorationRenderSystem;
 import com.goosepatrol.game.systems.CampusCollisionSystem;
+import com.badlogic.gdx.Input;
+import com.goosepatrol.game.session.GameSession;
+import com.goosepatrol.game.ui.HUD;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class GoosePatrolGame extends ApplicationAdapter {
@@ -24,6 +27,8 @@ public class GoosePatrolGame extends ApplicationAdapter {
     private MapRenderSystem mapRenderSystem;
     private BuildingRenderSystem buildingRenderSystem;
     private DecorationRenderSystem decorationRenderSystem;
+    private GameSession session;
+    private HUD hud;
 
     @Override
     public void create() {
@@ -49,12 +54,27 @@ public class GoosePatrolGame extends ApplicationAdapter {
 
         playerRenderSystem = new PlayerRenderSystem();
         gameWorld.addSystem(playerRenderSystem);
+
+        session =new GameSession();
+        hud = new HUD();
     }
 
     @Override
     public void render() {
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
-        gameWorld.update(Gdx.graphics.getDeltaTime());
+       
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P)|| Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
+        {
+            session.togglePause();
+        }
+
+        float delta=Gdx.graphics.getDeltaTime();
+        session.update(delta);
+
+        /*while the game is not running, the world is still drawn but time stands still */
+        gameWorld.update(session.isRunning()? delta:0f);
+
+        hud.draw(session);
 
     }
 
@@ -66,6 +86,7 @@ public class GoosePatrolGame extends ApplicationAdapter {
         if (mapRenderSystem != null) mapRenderSystem.dispose();
         if (buildingRenderSystem != null) buildingRenderSystem.dispose();
         if (decorationRenderSystem != null) decorationRenderSystem.dispose();
+        if (hud!=null) hud.dispose();
     }
 
 }

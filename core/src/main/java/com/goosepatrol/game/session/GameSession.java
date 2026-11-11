@@ -4,11 +4,13 @@ package com.goosepatrol.game.session;
 public class GameSession 
 {
   private static final float GAME_LENGTH_SECONDS = 5*60f;
+  private static final int DISPERSAL_TARGET = 10;
   
   private GameState state= GameState.PAUSED;
   private final GameTimer timer = new GameTimer(GAME_LENGTH_SECONDS);
   private final StressMeter stress= new StressMeter();
-  private static final int DISPERSAL_TARGET = 10;
+  
+  private int geeseDispersed = 0;
 
   /*called once every frame */
   public void update(float delta)
@@ -34,12 +36,34 @@ public class GameSession
         state= GameState.PAUSED;
     }
   }
+  public void gooseDispersed() 
+  {
+        if (!isRunning())
+        {
+           return;
+        }
+        geeseDispersed++;
+        checkEndConditions();
+  }
+
+   public int getGeeseDispersed()
+    {
+        return geeseDispersed;
+    }
+
+    public int getDispersalTarget() 
+    {
+        return DISPERSAL_TARGET;
+    }
+    
+  
   /*starts a fresh game and it begins paused same the first time */
   public void restart()
   {
     state=GameState.PAUSED;
     timer.reset();
     stress.reset();
+    geeseDispersed=0;
   }
   /*true once the game is finished regardless of the outcome */
   public boolean hasEnded()
@@ -57,6 +81,10 @@ public class GameSession
     if (stress.isFull())
     {
         state=GameState.STRESSED_OUT;
+    }
+    else if(geeseDispersed>=DISPERSAL_TARGET)
+    {
+      state= GameState.WON;
     }
     else if(timer.isFinished())
     {

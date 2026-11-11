@@ -79,6 +79,10 @@ public class GoosePatrolGame extends ApplicationAdapter {
         {
             session.getStress().add(10f);
         }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.G))
+        {
+            session.gooseDispersed();
+        }
 
         float delta=Gdx.graphics.getDeltaTime();
         session.update(delta);

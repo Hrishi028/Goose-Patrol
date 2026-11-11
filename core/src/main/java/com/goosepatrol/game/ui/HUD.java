@@ -83,6 +83,9 @@ public class HUD
         /*the label sits just to the left of the bar */
         layout.setText(font, "Stress");
         font.draw(batch, layout, barX-layout.width - 10f, height-MARGIN);
+        
+        //the goose count is in the middle of the top edge
+        font.draw(batch, "Geese: " + session.getGeeseDispersed()+ "/" + session.getDispersalTarget(),MARGIN, height - MARGIN - font.getLineHeight());
 
         String message = messageFor(session.getState());
         if (message !=null)
@@ -130,6 +133,8 @@ public class HUD
             {
                 case PAUSED:
                     return "PAUSED - Press P To Play";
+                case WON:
+                    return "YOU WIN! The Campus is Calm";
                 case TIMED_OUT:
                     return "Time's UP!";
                 case STRESSED_OUT:

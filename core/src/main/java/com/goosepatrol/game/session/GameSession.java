@@ -7,6 +7,7 @@ public class GameSession
   
   private GameState state= GameState.PAUSED;
   private final GameTimer timer = new GameTimer(GAME_LENGTH_SECONDS);
+  private final StressMeter stress= new StressMeter();
 
   /*called once every frame */
   public void update(float delta)
@@ -16,6 +17,7 @@ public class GameSession
         return;
     }
     timer.tick(delta);
+    stress.update(delta);
     checkEndConditions();
   }
 
@@ -39,7 +41,11 @@ public class GameSession
 
   private void checkEndConditions()
   {
-    if (timer.isFinished())
+    if (stress.isEmpty())
+    {
+        state=GameState.STRESSED_OUT;
+    }
+    else if(timer.isFinished())
     {
         state= GameState.TIMED_OUT;
     }
@@ -53,6 +59,10 @@ public class GameSession
   public GameTimer getTimer()
   {
     return timer;
+  }
+  public StressMeter getStress()
+  {
+    return stress;
   }
   
 

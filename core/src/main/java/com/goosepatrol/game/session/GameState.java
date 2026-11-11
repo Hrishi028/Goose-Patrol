@@ -6,5 +6,6 @@ public enum GameState
     PAUSED,
     RUNNING,
     WON,
-    TIMED_OUT
+    TIMED_OUT,
+    STRESSED_OUT
 }

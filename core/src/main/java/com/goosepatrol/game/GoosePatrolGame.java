@@ -68,6 +68,12 @@ public class GoosePatrolGame extends ApplicationAdapter {
             session.togglePause();
         }
 
+        //TEMPORARY: press K to lower bar...to be removed when geese added
+        if (session.isRunning()&& Gdx.input.isKeyJustPressed(Input.Keys.K))
+        {
+            session.getStress().drop(10f);
+        }
+
         float delta=Gdx.graphics.getDeltaTime();
         session.update(delta);
 

@@ -22,6 +22,8 @@ public class HUD
     private static final float BAR_WIDTH = 200f;
     private static final float BAR_HEIGHT = 18f;
     private static final float BAR_BORDER = 3f;
+    private static final float BAR_EASE_SPEED = 8f;
+
 
     private static final Color BAR_BACK = new Color(0.10f, 0.20f, 0.10f, 1f);
     private static final Color BAR_GOOD = new Color(0.36f, 0.78f, 0.36f, 1f);
@@ -33,6 +35,8 @@ public class HUD
     private final BitmapFont font;
     private final ShapeRenderer shapes = new ShapeRenderer();
     private final GlyphLayout layout = new GlyphLayout();
+    private float shownFraction = 0f;
+    private final Color barColor = new Color();
 
     public HUD()
    {
@@ -65,7 +69,11 @@ public class HUD
         float barX = width - MARGIN - BAR_WIDTH;
         float barY = height - MARGIN - BAR_HEIGHT;
 
-        drawStressBar(session.getStress().getFraction(), barX, barY);
+        float target = session.getStress().getFraction();
+        float step = Math.min(1f, BAR_EASE_SPEED * Gdx.graphics.getDeltaTime());
+        shownFraction += (target - shownFraction) * step;
+
+        drawStressBar(shownFraction, barX, barY);
 
 
         batch.begin();
@@ -100,22 +108,20 @@ public class HUD
         shapes.rect(x-BAR_BORDER, y-BAR_BORDER,
             BAR_WIDTH + 2 * BAR_BORDER, BAR_HEIGHT + 2 * BAR_BORDER);
         
-            if (fraction > 0.5f)
+            if (fraction < 0.5f) 
             {
-                shapes.setColor(BAR_GOOD);
+            barColor.set(BAR_GOOD).lerp(BAR_LOW, fraction / 0.5f);
             }
-            else if(fraction>0.25f)
+             else 
             {
-                shapes.setColor(BAR_LOW);
+            barColor.set(BAR_LOW).lerp(BAR_DANGER, (fraction - 0.5f) / 0.5f);
             }
-            else 
-            {
-                shapes.setColor(BAR_DANGER);
-            }
-            shapes.rect(x,y, BAR_WIDTH * fraction, BAR_HEIGHT);
+            shapes.setColor(barColor);
+            shapes.setColor(barColor);
+            shapes.rect(x, y, BAR_WIDTH * fraction, BAR_HEIGHT);
 
             shapes.end();
-        }
+    }
 
         /*the message for the middle of the screen or null when there is none */
         private String messageFor(GameState state)

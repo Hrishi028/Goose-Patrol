@@ -8,6 +8,7 @@ public class GameSession
   private GameState state= GameState.PAUSED;
   private final GameTimer timer = new GameTimer(GAME_LENGTH_SECONDS);
   private final StressMeter stress= new StressMeter();
+  private static final int DISPERSAL_TARGET = 10;
 
   /*called once every frame */
   public void update(float delta)
@@ -53,7 +54,7 @@ public class GameSession
 
   private void checkEndConditions()
   {
-    if (stress.isEmpty())
+    if (stress.isFull())
     {
         state=GameState.STRESSED_OUT;
     }

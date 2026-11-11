@@ -18,6 +18,8 @@ import com.goosepatrol.game.systems.CampusCollisionSystem;
 import com.badlogic.gdx.Input;
 import com.goosepatrol.game.session.GameSession;
 import com.goosepatrol.game.ui.HUD;
+import com.goosepatrol.game.components.PositionComponent;
+import com.goosepatrol.game.components.VelocityComponent;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class GoosePatrolGame extends ApplicationAdapter {
@@ -67,6 +69,10 @@ public class GoosePatrolGame extends ApplicationAdapter {
         {
             session.togglePause();
         }
+        if(session.hasEnded()&& Gdx.input.isKeyJustPressed(Input.Keys.R))
+        {
+            restart();
+        }
 
         //TEMPORARY: press K to lower bar...to be removed when geese added
         if (session.isRunning()&& Gdx.input.isKeyJustPressed(Input.Keys.K))
@@ -82,6 +88,14 @@ public class GoosePatrolGame extends ApplicationAdapter {
 
         hud.draw(session);
 
+    }
+    /*starting a new game and resetting the session and putting the player back at the start */
+    private void restart()
+    {
+        session.restart();
+
+        player.getComponent(PositionComponent.class).setPosition(Gdx.graphics.getWidth()/2f,Gdx.graphics.getHeight()/2f );
+        player.getComponent(VelocityComponent.class).setVelocity(0,0);
     }
 
 

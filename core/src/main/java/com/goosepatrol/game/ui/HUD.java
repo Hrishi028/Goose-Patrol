@@ -82,6 +82,12 @@ public class HUD
             layout.setText(font, message);
             font.draw(batch, layout, (width-layout.width)/2f,height/2f);
         }
+        if(session.hasEnded())
+        {
+            layout.setText(font, "Press R to restart");
+            font.draw(batch, layout, (width-layout.width)/2f, height/2f-40f);
+
+        }
         batch.end();
     }
 

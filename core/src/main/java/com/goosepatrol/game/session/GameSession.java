@@ -33,6 +33,18 @@ public class GameSession
         state= GameState.PAUSED;
     }
   }
+  /*starts a fresh game and it begins paused same the first time */
+  public void restart()
+  {
+    state=GameState.PAUSED;
+    timer.reset();
+    stress.reset();
+  }
+  /*true once the game is finished regardless of the outcome */
+  public boolean hasEnded()
+  {
+    return state == GameState.WON || state ==GameState.TIMED_OUT || state== GameState.STRESSED_OUT;
+  }
 
   public boolean isRunning()
   {

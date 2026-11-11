@@ -4,10 +4,12 @@ package com.goosepatrol.game.session;
 public class GameTimer 
 {
    private float secondsLeft;
-   
+   private final float startSeconds;
+
    public GameTimer(float startSeconds)
    {
     this.secondsLeft= startSeconds;
+    this.startSeconds=startSeconds;
    }
 
    /*taking the time since the last frame off the clock */
@@ -15,6 +17,11 @@ public class GameTimer
    public void tick(float delta)
    {
     secondsLeft = Math.max(0f, secondsLeft-delta);
+   }
+   /*putting the clock back to its starting time */
+   public void reset()
+   {
+      secondsLeft=startSeconds;
    }
 
    public boolean isFinished()

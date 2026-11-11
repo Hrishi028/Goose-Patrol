@@ -30,6 +30,12 @@ public class StressMeter
         level = Math.max(0f, level-amount);
         secondsSinceDrop=0f;
     }
+    /*filling the bar back up for a new game */
+    public void reset()
+    {
+        level=MAX_LEVEL;
+        secondsSinceDrop=0f;
+    }
     public boolean isEmpty()
     {
         return level <= 0f;

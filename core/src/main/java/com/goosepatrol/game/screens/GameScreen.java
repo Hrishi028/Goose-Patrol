@@ -37,6 +37,7 @@ public class GameScreen extends ScreenAdapter
     private final DecorationRenderSystem decorationRenderSystem;
     private final BuildingRenderSystem buildingRenderSystem;
     private final PlayerRenderSystem playerRenderSystem;
+    private final CampusCollisionSystem campusCollisionSystem;
 
     public GameScreen(GoosePatrolGame game)
     {
@@ -46,30 +47,45 @@ public class GameScreen extends ScreenAdapter
 
         gameWorld = new GameWorld();
 
-        mapRenderSystem = new MapRenderSystem();
+        mapRenderSystem = new MapRenderSystem(game.getGameViewport());
         gameWorld.addSystem(mapRenderSystem);
 
-        decorationRenderSystem = new DecorationRenderSystem();
+        decorationRenderSystem =
+            new DecorationRenderSystem(game.getGameViewport());
         gameWorld.addSystem(decorationRenderSystem);
 
-        buildingRenderSystem = new BuildingRenderSystem();
+        buildingRenderSystem = new BuildingRenderSystem(game.getGameViewport());
         gameWorld.addSystem(buildingRenderSystem);
 
         gameWorld.addSystem(new PlayerInputSystem());
         gameWorld.addSystem(new MovementSystem());
-        gameWorld.addSystem(new CampusCollisionSystem());
-        gameWorld.addSystem(new BoundarySystem());
+        campusCollisionSystem =
+            new CampusCollisionSystem(game.getGameViewport());
+
+        gameWorld.addSystem(
+            new BoundarySystem(game.getGameViewport())
+        );
+
+        gameWorld.addSystem(campusCollisionSystem);
 
         EntityFactory entityFactory = new EntityFactory();
         player = PlayerFactory.createPlayer(entityFactory);
+
+       // Start the player in the center of the virtual game world
+        player.getComponent(PositionComponent.class).setPosition(
+            game.getGameViewport().getWorldWidth() / 2f,
+            game.getGameViewport().getWorldHeight() / 2f
+        );
+
         gameWorld.addEntity(player);
 
-    
 
-        playerRenderSystem = new PlayerRenderSystem();
+
+        playerRenderSystem =
+            new PlayerRenderSystem(game.getGameViewport());
         gameWorld.addSystem(playerRenderSystem);
 
-        hud = new HUD();
+        hud = new HUD(game.getGameViewport());
     }
 
     /*getting called by LibGDX once every frame while this screen is showing */
@@ -77,6 +93,7 @@ public class GameScreen extends ScreenAdapter
     public void render(float delta)
     {
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
+        game.getGameViewport().apply();
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.P)
             || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
@@ -105,7 +122,7 @@ public class GameScreen extends ScreenAdapter
         }
         session.update(delta);
 
-       
+
         gameWorld.update(session.isRunning()?delta:0f);
 
         hud.draw(session);
@@ -117,12 +134,16 @@ public class GameScreen extends ScreenAdapter
     {
         session.restart();
 
-        player.getComponent(PositionComponent.class).setPosition(Gdx.graphics.getWidth()/2,Gdx.graphics.getHeight()/2f);
-        player.getComponent(VelocityComponent.class).setVelocity(0, 0);
+        player.getComponent(PositionComponent.class).setPosition(
+            game.getGameViewport().getWorldWidth() / 2f,
+            game.getGameViewport().getWorldHeight() / 2f
+        );
 
+        player.getComponent(VelocityComponent.class).setVelocity(0, 0);
+        campusCollisionSystem.resetPlayerPosition(player.getId());
     }
 
-    @Override 
+    @Override
     public void dispose()
     {
         playerRenderSystem.dispose();

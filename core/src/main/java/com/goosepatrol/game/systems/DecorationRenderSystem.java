@@ -1,15 +1,21 @@
+
 package com.goosepatrol.game.systems;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.goosepatrol.game.GameViewport;
 import com.goosepatrol.game.ecs.GameSystem;
 import com.goosepatrol.game.ecs.GameWorld;
 
 public class DecorationRenderSystem implements GameSystem {
 
+    private static final float W = 1300f;
+    private static final float H = 1000f;
+
     private final SpriteBatch batch = new SpriteBatch();
+    private final GameViewport gameViewport;
     private final Texture sheet;
 
     private final TextureRegion tree1;
@@ -31,7 +37,9 @@ public class DecorationRenderSystem implements GameSystem {
     private final TextureRegion lamp;
     private final TextureRegion flowerBed;
 
-    public DecorationRenderSystem() {
+    public DecorationRenderSystem(GameViewport gameViewport) {
+
+        this.gameViewport = gameViewport;
 
         sheet = new Texture(
             Gdx.files.internal(
@@ -73,10 +81,9 @@ public class DecorationRenderSystem implements GameSystem {
     @Override
     public void update(GameWorld world, float deltaTime) {
 
-        float w = Gdx.graphics.getWidth();
-        float h = Gdx.graphics.getHeight();
-
-        float s = Math.min(w / 1300f, h / 1000f);
+        batch.setProjectionMatrix(
+            gameViewport.getCamera().combined
+        );
 
         batch.begin();
 
@@ -84,183 +91,90 @@ public class DecorationRenderSystem implements GameSystem {
         // UPPER LEFT GARDEN
         // =====================================
 
-        batch.draw(tree1,
-            w * 0.28f, h * 0.77f,
-            115 * s, 125 * s);
+        batch.draw(tree1, 364, 770, 115, 125);
+        batch.draw(tree2, 500, 790, 120, 130);
 
-        batch.draw(tree2,
-            w * 0.39f, h * 0.80f,
-            120 * s, 130 * s);
-
-        batch.draw(bush1,
-            w * 0.08f, h * 0.54f,
-            65 * s, 40 * s);
-
-        batch.draw(flowers1,
-            w * 0.28f, h * 0.55f,
-            75 * s, 35 * s);
+        batch.draw(bush1, 105, 540, 65, 40);
+        batch.draw(flowers1, 365, 550, 75, 35);
 
         // =====================================
         // UPPER MIDDLE GARDEN
-        // Keep the top-right building clear.
         // =====================================
 
-        batch.draw(bush2,
-            w * 0.43f, h * 0.55f,
-            65 * s, 40 * s);
-
-        batch.draw(flowers2,
-            w * 0.50f, h * 0.53f,
-            65 * s, 32 * s);
+        batch.draw(bush2, 455, 550, 65, 40);
+        batch.draw(flowers2, 535, 550, 65, 32);
 
         // =====================================
         // LOWER LEFT GARDEN
         // =====================================
 
-        batch.draw(tree2,
-            w * 0.32f, h * 0.09f,
-            110 * s, 120 * s);
+        batch.draw(tree2, 405, 90, 110, 120);
+        batch.draw(tree3, 820, 90, 105, 115);
 
-        batch.draw(tree3,
-            w * 0.63f, h * 0.09f,
-            105 * s, 115 * s);
-
-        batch.draw(bush3,
-            w * 0.08f, h * 0.34f,
-            65 * s, 40 * s);
-
-        batch.draw(flowers3,
-            w * 0.29f, h * 0.34f,
-            75 * s, 35 * s);
+        batch.draw(bush3, 105, 340, 65, 40);
+        batch.draw(flowers3, 370, 340, 75, 35);
 
         // =====================================
         // LOWER MIDDLE GARDEN
-        // Keep the lower-right building clear.
         // =====================================
 
-        batch.draw(tree1,
-            w * 0.43f, h * 0.10f,
-            100 * s, 110 * s);
+        batch.draw(tree1, 465, 100, 100, 110);
 
-        batch.draw(bush4,
-            w * 0.68f, h * 0.34f,
-            65 * s, 40 * s);
-
-        batch.draw(flowers4,
-            w * 0.77f, h * 0.34f,
-            75 * s, 35 * s);
+        batch.draw(bush4, 890, 340, 65, 40);
+        batch.draw(flowers4, 1010, 340, 75, 35);
 
         // =====================================
         // BENCHES
+        // Keep away from the lake and pathways
         // =====================================
 
-        batch.draw(bench,
-            w * 0.16f, h * 0.58f,
-            80 * s, 40 * s);
+        batch.draw(bench, 105, 550, 80, 40);
+        batch.draw(bench, 1120, 520, 80, 40);
 
-        batch.draw(bench,
-            w * 0.72f, h * 0.58f,
-            80 * s, 40 * s);
-
-        batch.draw(bench,
-            w * 0.16f, h * 0.30f,
-            80 * s, 40 * s);
-
-        batch.draw(bench,
-            w * 0.72f, h * 0.30f,
-            80 * s, 40 * s);
+        batch.draw(bench, 105, 305, 80, 40);
+        batch.draw(bench, 1120, 305, 80, 40);
 
         // =====================================
         // LAMPS
         // =====================================
 
-        batch.draw(lamp,
-            w * 0.37f, h * 0.54f,
-            20 * s, 62 * s);
+        batch.draw(lamp, 465, 535, 20, 62);
+        batch.draw(lamp, 850, 535, 20, 62);
 
-        batch.draw(lamp,
-            w * 0.64f, h * 0.54f,
-            20 * s, 62 * s);
-
-        batch.draw(lamp,
-            w * 0.37f, h * 0.30f,
-            20 * s, 62 * s);
-
-        batch.draw(lamp,
-            w * 0.61f, h * 0.30f,
-            20 * s, 62 * s);
+        batch.draw(lamp, 465, 305, 20, 62);
+        batch.draw(lamp, 850, 305, 20, 62);
 
         // =====================================
         // FLOWER BEDS
+        // Positioned away from lower pathway
         // =====================================
 
-        batch.draw(flowerBed,
-            w * 0.08f, h * 0.25f,
-            75 * s, 34 * s);
-
-        batch.draw(flowerBed,
-            w * 0.83f, h * 0.25f,
-            75 * s, 34 * s);
-
+        batch.draw(flowerBed, 105, 330, 75, 34);
+        batch.draw(flowerBed, 1120, 330, 75, 34);
 
         // =====================================
         // TREES AROUND THE LAKE
         // =====================================
 
-        // North side of the lake
-        batch.draw(tree4,
-            w * 0.62f, h * 0.78f,
-            75 * s, 85 * s);
-
-        // South-west side of the lake
-        batch.draw(tree4,
-            w * 0.54f, h * 0.48f,
-            65 * s, 75 * s);
-
-        // South-east side of the lake
-        batch.draw(tree4,
-            w * 0.79f, h * 0.47f,
-            65 * s, 75 * s);
+        batch.draw(tree4, 810, 790, 75, 85);
+        batch.draw(tree4, 705, 475, 65, 75);
+        batch.draw(tree4, 1090, 475, 65, 75);
 
         // =====================================
         // EXTRA CAMPUS FLOWERS
         // =====================================
 
-        // Upper gardens
-        batch.draw(flowers1,
-            w * 0.08f, h * 0.73f,
-            75 * s, 35 * s);
+        batch.draw(flowers1, 105, 730, 75, 35);
+        batch.draw(flowers3, 430, 730, 75, 35);
 
-        batch.draw(flowers3,
-            w * 0.42f, h * 0.73f,
-            75 * s, 35 * s);
+        batch.draw(flowers2, 750, 770, 65, 32);
+        batch.draw(flowers4, 1100, 490, 70, 35);
 
-        // Around the lake
-        batch.draw(flowers2,
-            w * 0.57f, h * 0.76f,
-            65 * s, 32 * s);
+        batch.draw(flowers1, 105, 170, 75, 35);
+        batch.draw(flowers3, 370, 180, 75, 35);
 
-        batch.draw(flowers4,
-            w * 0.82f, h * 0.49f,
-            70 * s, 35 * s);
-
-        // Lower gardens
-        batch.draw(flowers1,
-            w * 0.08f, h * 0.17f,
-            75 * s, 35 * s);
-
-        batch.draw(flowers3,
-            w * 0.36f, h * 0.18f,
-            75 * s, 35 * s);
-
-        batch.draw(flowers2,
-            w * 0.68f, h * 0.17f,
-            75 * s, 35 * s);
-
-        batch.draw(flowers4,
-            w * 0.86f, h * 0.18f,
-            75 * s, 35 * s);
-
+        batch.draw(flowers2, 890, 170, 75, 35);
+        batch.draw(flowers4, 1120, 180, 75, 35);
 
         batch.end();
     }

@@ -1,14 +1,19 @@
+
 package com.goosepatrol.game.systems;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.goosepatrol.game.GameViewport;
 import com.goosepatrol.game.ecs.GameSystem;
 import com.goosepatrol.game.ecs.GameWorld;
 
 public class MapRenderSystem implements GameSystem {
 
     private final ShapeRenderer shapes = new ShapeRenderer();
+    private final GameViewport gameViewport;
+
+    private static final float WORLD_WIDTH = 1300f;
+    private static final float WORLD_HEIGHT = 1000f;
 
     private static final Color GRASS =
         new Color(0.25f, 0.43f, 0.22f, 1f);
@@ -25,13 +30,19 @@ public class MapRenderSystem implements GameSystem {
     private static final Color WATER =
         new Color(0.02f, 0.40f, 0.62f, 1f);
 
+    public MapRenderSystem(GameViewport gameViewport) {
+        this.gameViewport = gameViewport;
+    }
+
     @Override
     public void update(GameWorld world, float deltaTime) {
 
-        float w = Gdx.graphics.getWidth();
-        float h = Gdx.graphics.getHeight();
+        shapes.setProjectionMatrix(
+            gameViewport.getCamera().combined
+        );
 
-        float s = Math.min(w / 1300f, h / 1000f);
+        float w = WORLD_WIDTH;
+        float h = WORLD_HEIGHT;
 
         shapes.begin(ShapeRenderer.ShapeType.Filled);
 
@@ -46,44 +57,44 @@ public class MapRenderSystem implements GameSystem {
             float x = (i * 137f) % w;
             float y = (i * 89f) % h;
 
-            shapes.circle(x, y, 1.5f * s);
+            shapes.circle(x, y, 1.5f);
         }
 
-        // Main horizontal path
+        // Main horizontal pathway
         drawPath(
             w * 0.06f, h * 0.44f,
             w * 0.94f, h * 0.44f,
-            38 * s
+            38f
         );
 
-        // Main vertical path
+        // Main vertical pathway
         drawPath(
             w * 0.50f, h * 0.08f,
             w * 0.50f, h * 0.91f,
-            38 * s
+            38f
         );
 
-        // Secondary lower path
+        // Secondary lower pathway
         drawPath(
             w * 0.10f, h * 0.27f,
             w * 0.90f, h * 0.27f,
-            30 * s
+            30f
         );
 
         // Roundabout outer border
         shapes.setColor(PATH_BORDER);
-        shapes.circle(w * 0.50f, h * 0.44f, 78 * s);
+        shapes.circle(w * 0.50f, h * 0.44f, 78f);
 
         // Roundabout interior
         shapes.setColor(PATH);
-        shapes.circle(w * 0.50f, h * 0.44f, 72 * s);
+        shapes.circle(w * 0.50f, h * 0.44f, 72f);
 
         // Central green island
         shapes.setColor(WATER_BORDER);
-        shapes.circle(w * 0.50f, h * 0.44f, 34 * s);
+        shapes.circle(w * 0.50f, h * 0.44f, 34f);
 
         shapes.setColor(0.30f, 0.49f, 0.25f, 1f);
-        shapes.circle(w * 0.50f, h * 0.44f, 29 * s);
+        shapes.circle(w * 0.50f, h * 0.44f, 29f);
 
         // Lake border
         shapes.setColor(WATER_BORDER);
@@ -133,7 +144,7 @@ public class MapRenderSystem implements GameSystem {
 
         shapes.rectLine(
             x1, y1, x2, y2,
-            thickness + 4
+            thickness + 4f
         );
 
         shapes.setColor(PATH);

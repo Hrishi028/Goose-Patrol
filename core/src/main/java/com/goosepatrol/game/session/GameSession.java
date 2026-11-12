@@ -1,6 +1,6 @@
 package com.goosepatrol.game.session;
 import com.goosepatrol.game.items.Bread;
-
+import com.goosepatrol.game.items.Umbrella;
 /*holds the rules of one playthrough, its state and its timer */
 public class GameSession 
 {
@@ -17,6 +17,8 @@ public class GameSession
   public GameSession()
   {
     inventory.add(new Bread());
+    
+    inventory.add(new Umbrella(stress));
   }
 
   /*called once every frame */

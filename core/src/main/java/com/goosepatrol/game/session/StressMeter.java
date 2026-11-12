@@ -12,11 +12,14 @@ public class StressMeter
 
     private float level=0f;
     private float secondsSinceRise=0f;
+    //while this is above zero the player is shielded and no stress can be added
+    private float shieldSecondsLeft=0f;
 
     /*calling every frame while the game is running */
     public void update(float delta)
     {
         secondsSinceRise+=delta;
+        shieldSecondsLeft=Math.max(0f, shieldSecondsLeft-delta);
 
         if(secondsSinceRise>=RECOVER_DELAY_SECONDS)
         {
@@ -27,9 +30,22 @@ public class StressMeter
     /*raising the bar by the given amount...it never goes above the max limit */
     public void add(float amount)
     {
+        //a shielded player takes no stress at all
+        if(isShielded())
+        {
+            return;
+        }
         level =Math.min(MAX_LEVEL, level+amount);
         secondsSinceRise=0f;
 
+    }
+    public void shield(float seconds)
+    {
+        shieldSecondsLeft=Math.max(shieldSecondsLeft, seconds);
+    }
+    public boolean isShielded()
+    {
+        return shieldSecondsLeft>0f;
     }
 
     /*emptying the bar for a new game */
@@ -37,6 +53,7 @@ public class StressMeter
     {
         level=0f;
         secondsSinceRise=0f;
+        shieldSecondsLeft=0f;
 
     }
     public boolean isFull()

@@ -8,6 +8,7 @@ import com.goosepatrol.game.components.VelocityComponent;
 import com.goosepatrol.game.ecs.Entity;
 import com.goosepatrol.game.ecs.GameSystem;
 import com.goosepatrol.game.ecs.GameWorld;
+import com.goosepatrol.game.session.StressMeter;
 
 public class PlayerInputSystem implements GameSystem {
 

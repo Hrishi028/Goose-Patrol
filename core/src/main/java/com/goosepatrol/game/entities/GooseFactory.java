@@ -7,7 +7,7 @@ import com.goosepatrol.game.components.VelocityComponent;
 import com.goosepatrol.game.ecs.Entity;
 import com.goosepatrol.game.ecs.EntityFactory;
 
-/** Builds goose entities. */
+/** Builds goose entities. */  
 public class GooseFactory {
 
     // Geese should be a bit slower than the player (220) so the player can get away.

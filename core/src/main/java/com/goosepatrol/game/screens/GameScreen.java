@@ -16,16 +16,26 @@ import com.goosepatrol.game.systems.BoundarySystem;
 import com.goosepatrol.game.systems.BuildingRenderSystem;
 import com.goosepatrol.game.systems.CampusCollisionSystem;
 import com.goosepatrol.game.systems.DecorationRenderSystem;
+import com.goosepatrol.game.systems.GooseBehaviourSystem;
+import com.goosepatrol.game.systems.GooseRenderSystem;
+import com.goosepatrol.game.systems.GooseSpawnSystem;
 import com.goosepatrol.game.systems.MapRenderSystem;
 import com.goosepatrol.game.systems.MovementSystem;
 import com.goosepatrol.game.systems.PlayerInputSystem;
 import com.goosepatrol.game.systems.PlayerRenderSystem;
+import com.goosepatrol.game.systems.StressSystem;
+import com.goosepatrol.game.systems.PlayerRenderSystem;
 import com.goosepatrol.game.ui.HUD;
+import com.goosepatrol.game.systems.GooseBehaviourSystem;
+import com.goosepatrol.game.systems.GooseRenderSystem;
+import com.goosepatrol.game.systems.GooseSpawnSystem;
+import com.goosepatrol.game.systems.StressSystem;
 
 /*the screen where the game is played */
 
 public class GameScreen extends ScreenAdapter
 {
+    private GooseRenderSystem gooseRenderSystem;
     private final GoosePatrolGame game;
 
     private final GameSession session;
@@ -40,11 +50,13 @@ public class GameScreen extends ScreenAdapter
 
     public GameScreen(GoosePatrolGame game)
     {
-        this.game = game;
+                this.game = game;
 
         session = new GameSession();
 
         gameWorld = new GameWorld();
+
+        EntityFactory entityFactory = new EntityFactory();
 
         mapRenderSystem = new MapRenderSystem();
         gameWorld.addSystem(mapRenderSystem);
@@ -56,15 +68,19 @@ public class GameScreen extends ScreenAdapter
         gameWorld.addSystem(buildingRenderSystem);
 
         gameWorld.addSystem(new PlayerInputSystem());
+        gameWorld.addSystem(new GooseSpawnSystem(entityFactory));
+        gameWorld.addSystem(new GooseBehaviourSystem(session));
         gameWorld.addSystem(new MovementSystem());
         gameWorld.addSystem(new CampusCollisionSystem());
         gameWorld.addSystem(new BoundarySystem());
+        gameWorld.addSystem(new StressSystem(session));
 
-        EntityFactory entityFactory = new EntityFactory();
+        // Geese are drawn before the player, so the player overlaps them.
+        gooseRenderSystem = new GooseRenderSystem();
+        gameWorld.addSystem(gooseRenderSystem);
+
         player = PlayerFactory.createPlayer(entityFactory);
         gameWorld.addEntity(player);
-
-    
 
         playerRenderSystem = new PlayerRenderSystem();
         gameWorld.addSystem(playerRenderSystem);
@@ -130,6 +146,7 @@ public class GameScreen extends ScreenAdapter
         buildingRenderSystem.dispose();
         decorationRenderSystem.dispose();
         hud.dispose();
+        gooseRenderSystem.dispose();
     }
 
 }

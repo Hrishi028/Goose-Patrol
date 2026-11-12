@@ -20,6 +20,11 @@ import com.goosepatrol.game.session.GameSession;
 import com.goosepatrol.game.ui.HUD;
 import com.goosepatrol.game.components.PositionComponent;
 import com.goosepatrol.game.components.VelocityComponent;
+import com.goosepatrol.game.systems.GooseRenderSystem;
+import com.goosepatrol.game.systems.GooseSpawnSystem;
+import com.goosepatrol.game.systems.GooseBehaviourSystem;
+import com.goosepatrol.game.systems.StressSystem;
+
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class GoosePatrolGame extends ApplicationAdapter {
@@ -31,11 +36,15 @@ public class GoosePatrolGame extends ApplicationAdapter {
     private DecorationRenderSystem decorationRenderSystem;
     private GameSession session;
     private HUD hud;
+    private GooseRenderSystem gooseRenderSystem;
+    private GooseSpawnSystem gooseSpawnSystem;
 
     @Override
     public void create() {
         gameWorld = new GameWorld();
 
+        EntityFactory entityFactory = new EntityFactory();
+        session =new GameSession();
         mapRenderSystem = new MapRenderSystem();
         gameWorld.addSystem(mapRenderSystem);
 
@@ -46,19 +55,29 @@ public class GoosePatrolGame extends ApplicationAdapter {
         gameWorld.addSystem(buildingRenderSystem);
 
         gameWorld.addSystem(new PlayerInputSystem());
+        gooseSpawnSystem = new GooseSpawnSystem(entityFactory);
+        gameWorld.addSystem(gooseSpawnSystem);
+
+        gameWorld.addSystem(new GooseBehaviourSystem(session));
         gameWorld.addSystem(new MovementSystem());
         gameWorld.addSystem(new CampusCollisionSystem());
         gameWorld.addSystem(new BoundarySystem());
+        gameWorld.addSystem(new StressSystem(session));
 
-        EntityFactory entityFactory = new EntityFactory();
+
+        //Geese are drawn before player so that the player overlaps the geese.
+        gooseRenderSystem = new GooseRenderSystem();
+        gameWorld.addSystem(gooseRenderSystem);
+
         player = PlayerFactory.createPlayer(entityFactory);
         gameWorld.addEntity(player);
 
         playerRenderSystem = new PlayerRenderSystem();
         gameWorld.addSystem(playerRenderSystem);
 
-        session =new GameSession();
         hud = new HUD();
+
+    
     }
 
     @Override
@@ -111,6 +130,7 @@ public class GoosePatrolGame extends ApplicationAdapter {
         if (buildingRenderSystem != null) buildingRenderSystem.dispose();
         if (decorationRenderSystem != null) decorationRenderSystem.dispose();
         if (hud!=null) hud.dispose();
+        if (gooseRenderSystem != null) gooseRenderSystem.dispose();
     }
 
 }

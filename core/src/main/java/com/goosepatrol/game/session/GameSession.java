@@ -1,4 +1,5 @@
 package com.goosepatrol.game.session;
+import com.goosepatrol.game.items.Bread;
 
 /*holds the rules of one playthrough, its state and its timer */
 public class GameSession 
@@ -11,6 +12,12 @@ public class GameSession
   private final StressMeter stress= new StressMeter();
   
   private int geeseDispersed = 0;
+  private final Inventory inventory = new Inventory();
+
+  public GameSession()
+  {
+    inventory.add(new Bread());
+  }
 
   /*called once every frame */
   public void update(float delta)
@@ -64,6 +71,7 @@ public class GameSession
     timer.reset();
     stress.reset();
     geeseDispersed=0;
+    inventory.reset();
   }
   /*true once the game is finished regardless of the outcome */
   public boolean hasEnded()
@@ -100,6 +108,10 @@ public class GameSession
   public GameTimer getTimer()
   {
     return timer;
+  }
+  public Inventory getInventory()
+  {
+    return inventory;
   }
   public StressMeter getStress()
   {

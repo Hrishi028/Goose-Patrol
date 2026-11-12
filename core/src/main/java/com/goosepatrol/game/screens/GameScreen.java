@@ -119,6 +119,21 @@ public class GameScreen extends ScreenAdapter
         {
             session.gooseDispersed();
         }
+       
+        //the number keys use the item in that inventory slot
+        if (session.isRunning())
+        {
+            PositionComponent position = player.getComponent(PositionComponent.class);
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1))
+            {
+                session.getInventory().use(0, gameWorld, position.getX(), position.getY());
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2))
+            {
+                session.getInventory().use(1, gameWorld, position.getX(), position.getY());
+            }
+        }
         session.update(delta);
 
        

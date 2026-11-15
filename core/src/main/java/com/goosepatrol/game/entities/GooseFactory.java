@@ -11,8 +11,8 @@ import com.goosepatrol.game.ecs.EntityFactory;
 public class GooseFactory {
 
     // Geese should be a bit slower than the player (220) so the player can get away.
-    private static final float MIN_SPEED = 100f;
-    private static final float MAX_SPEED = 135f;
+    private static final float MIN_SPEED = 60f;
+    private static final float MAX_SPEED = 80f;
 
     private static final int MIN_HUNGER = 2;
     private static final int MAX_HUNGER = 4;

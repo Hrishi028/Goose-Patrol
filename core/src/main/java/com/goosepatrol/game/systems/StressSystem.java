@@ -15,7 +15,7 @@ import com.goosepatrol.game.session.GameSession;
 public class StressSystem implements GameSystem {
 
     private static final float ATTACK_RANGE = 40f;    //how close counts as "on you"
-    private static final float STRESS_PER_GOOSE_PER_SECOND = 8f;
+    private static final float STRESS_PER_GOOSE_PER_SECOND = 6f;
 
     private final GameSession session;
 

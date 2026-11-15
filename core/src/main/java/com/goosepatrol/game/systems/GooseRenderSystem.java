@@ -1,5 +1,5 @@
 package com.goosepatrol.game.systems;
-
+import com.goosepatrol.game.GameViewport;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.goosepatrol.game.components.GooseComponent;
@@ -25,8 +25,16 @@ public class GooseRenderSystem implements GameSystem {
 
     private final ShapeRenderer shapes = new ShapeRenderer();
 
+        private final GameViewport gameViewport;
+
+    public GooseRenderSystem(GameViewport gameViewport) {
+        this.gameViewport = gameViewport;
+    }
+
     @Override
     public void update(GameWorld world, float deltaTime) {
+
+        shapes.setProjectionMatrix(gameViewport.getCamera().combined);
 
         shapes.begin(ShapeRenderer.ShapeType.Filled);
 

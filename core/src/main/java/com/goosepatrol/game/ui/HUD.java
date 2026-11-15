@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.goosepatrol.game.items.Item;
 import com.goosepatrol.game.session.GameSession;
 import com.goosepatrol.game.session.GameState;
+import com.goosepatrol.game.GameViewport;
 
 import java.util.List;
 
@@ -51,10 +52,21 @@ public class HUD
     private float shownFraction = 0f;
     private final Color barColor = new Color();
 
+
+    private final GameViewport gameViewport;
+
+    public HUD(GameViewport gameViewport)
+    {
+        this.gameViewport = gameViewport;
+    }
+
     public void draw(GameSession session)
     {
-        float width = Gdx.graphics.getWidth();
-        float height = Gdx.graphics.getHeight();
+        float width = gameViewport.getWorldWidth();
+        float height = gameViewport.getWorldHeight();
+
+        shapes.setProjectionMatrix(gameViewport.getCamera().combined);
+        batch.setProjectionMatrix(gameViewport.getCamera().combined);
 
         List<Item> items = session.getInventory().getItems();
 

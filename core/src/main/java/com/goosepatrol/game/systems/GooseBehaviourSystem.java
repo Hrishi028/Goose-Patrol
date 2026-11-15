@@ -1,6 +1,6 @@
 package com.goosepatrol.game.systems;
 
-import com.badlogic.gdx.Gdx;
+import com.goosepatrol.game.GameViewport;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.goosepatrol.game.components.GooseComponent;
@@ -49,8 +49,8 @@ public class GooseBehaviourSystem implements GameSystem {
             return;
         }
 
-        float w = Gdx.graphics.getWidth();
-        float h = Gdx.graphics.getHeight();
+        float w = GameViewport.WORLD_WIDTH;
+        float h = GameViewport.WORLD_HEIGHT;
 
         //Geese can't be removed while we loop over the list.
         List<Entity> gone = new ArrayList<>();

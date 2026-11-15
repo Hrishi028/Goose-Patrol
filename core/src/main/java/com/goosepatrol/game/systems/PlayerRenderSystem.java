@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import com.goosepatrol.game.GameViewport;
 import com.goosepatrol.game.components.PlayerComponent;
 import com.goosepatrol.game.components.PositionComponent;
 import com.goosepatrol.game.components.VelocityComponent;
@@ -18,14 +19,16 @@ public class PlayerRenderSystem implements GameSystem {
     private final SpriteBatch batch;
     private final Texture playerTexture;
     private final TextureRegion[][] frames;
+    private final GameViewport gameViewport;
 
     private float animationTime = 0;
 
     private static final float DRAW_WIDTH = 96f;
     private static final float DRAW_HEIGHT = 96f;
 
-    public PlayerRenderSystem() {
+    public PlayerRenderSystem(GameViewport gameViewport) {
 
+        this.gameViewport = gameViewport;
         batch = new SpriteBatch();
 
         playerTexture = new Texture(
@@ -46,7 +49,7 @@ public class PlayerRenderSystem implements GameSystem {
             frameHeight
         );
 
-// The character animations occupy columns 1–4.
+        // Character animations occupy columns 1–4.
         frames = new TextureRegion[4][4];
 
         for (int row = 0; row < 4; row++) {
@@ -60,6 +63,10 @@ public class PlayerRenderSystem implements GameSystem {
     public void update(GameWorld world, float deltaTime) {
 
         animationTime += deltaTime;
+
+        batch.setProjectionMatrix(
+            gameViewport.getCamera().combined
+        );
 
         batch.begin();
 
@@ -82,7 +89,7 @@ public class PlayerRenderSystem implements GameSystem {
             // Default: facing forward.
             int row = 0;
 
-            // Select the direction based on movement.
+            // Select direction based on movement.
             if (Math.abs(vx) > Math.abs(vy)) {
 
                 if (vx < 0) {
@@ -97,7 +104,7 @@ public class PlayerRenderSystem implements GameSystem {
                 row = 0; // Forward
             }
 
-            // Animate only when the player is moving.
+            // Animate only when moving.
             int column = 0;
 
             if (Math.abs(vx) > 0 || Math.abs(vy) > 0) {

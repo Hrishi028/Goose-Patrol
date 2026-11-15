@@ -30,6 +30,7 @@ import com.goosepatrol.game.systems.GooseBehaviourSystem;
 import com.goosepatrol.game.systems.GooseRenderSystem;
 import com.goosepatrol.game.systems.GooseSpawnSystem;
 import com.goosepatrol.game.systems.StressSystem;
+import com.goosepatrol.game.GameViewport;
 
 /*the screen where the game is played */
 
@@ -37,6 +38,7 @@ public class GameScreen extends ScreenAdapter
 {
     private GooseRenderSystem gooseRenderSystem;
     private final GoosePatrolGame game;
+    private final GameViewport gameViewport;
 
     private final GameSession session;
     private final GameWorld gameWorld;
@@ -50,7 +52,8 @@ public class GameScreen extends ScreenAdapter
 
     public GameScreen(GoosePatrolGame game)
     {
-                this.game = game;
+        this.game = game;
+        this.gameViewport = game.getGameViewport();
 
         session = new GameSession();
 
@@ -58,34 +61,36 @@ public class GameScreen extends ScreenAdapter
 
         EntityFactory entityFactory = new EntityFactory();
 
-        mapRenderSystem = new MapRenderSystem();
+        mapRenderSystem = new MapRenderSystem(gameViewport);
         gameWorld.addSystem(mapRenderSystem);
 
-        decorationRenderSystem = new DecorationRenderSystem();
+        decorationRenderSystem = new DecorationRenderSystem(gameViewport);
         gameWorld.addSystem(decorationRenderSystem);
 
-        buildingRenderSystem = new BuildingRenderSystem();
+        buildingRenderSystem = new BuildingRenderSystem(gameViewport);
         gameWorld.addSystem(buildingRenderSystem);
 
         gameWorld.addSystem(new PlayerInputSystem());
         gameWorld.addSystem(new GooseSpawnSystem(entityFactory));
         gameWorld.addSystem(new GooseBehaviourSystem(session));
         gameWorld.addSystem(new MovementSystem());
-        gameWorld.addSystem(new CampusCollisionSystem());
-        gameWorld.addSystem(new BoundarySystem());
+        gameWorld.addSystem(new CampusCollisionSystem(gameViewport));
+        gameWorld.addSystem(new BoundarySystem(gameViewport));
         gameWorld.addSystem(new StressSystem(session));
 
         // Geese are drawn before the player, so the player overlaps them.
-        gooseRenderSystem = new GooseRenderSystem();
+        gooseRenderSystem = new GooseRenderSystem(gameViewport);
         gameWorld.addSystem(gooseRenderSystem);
 
         player = PlayerFactory.createPlayer(entityFactory);
+        player.getComponent(PositionComponent.class).setPosition(gameViewport.getWorldWidth()/2f, gameViewport.getWorldHeight()/2f );
+
         gameWorld.addEntity(player);
 
-        playerRenderSystem = new PlayerRenderSystem();
+        playerRenderSystem = new PlayerRenderSystem(gameViewport);
         gameWorld.addSystem(playerRenderSystem);
 
-        hud = new HUD();
+        hud = new HUD(gameViewport);
     }
 
     /*getting called by LibGDX once every frame while this screen is showing */
@@ -93,6 +98,7 @@ public class GameScreen extends ScreenAdapter
     public void render(float delta)
     {
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
+          gameViewport.apply();
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.P)
             || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
@@ -148,7 +154,7 @@ public class GameScreen extends ScreenAdapter
     {
         session.restart();
 
-        player.getComponent(PositionComponent.class).setPosition(Gdx.graphics.getWidth()/2,Gdx.graphics.getHeight()/2f);
+        player.getComponent(PositionComponent.class).setPosition(gameViewport.getWorldWidth()/2f,gameViewport.getWorldHeight()/2f);
         player.getComponent(VelocityComponent.class).setVelocity(0, 0);
 
     }

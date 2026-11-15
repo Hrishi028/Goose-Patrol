@@ -34,6 +34,7 @@ import com.goosepatrol.game.systems.PlayerInputSystem;
 import com.goosepatrol.game.systems.PlayerRenderSystem;
 import com.goosepatrol.game.ui.Fonts;
 import com.goosepatrol.game.ui.HUD;
+import com.goosepatrol.game.GameViewport;
 
 /**
  * A practice round on the real map. The player is given one task at a time and each
@@ -78,6 +79,7 @@ public class TutorialScreen extends ScreenAdapter {
     private final GlyphLayout layout = new GlyphLayout();
     private final BitmapFont textFont = Fonts.create(20);
     private final BitmapFont smallFont = Fonts.create(14);
+    private final GameViewport gameViewport;
 
     private Step step = Step.MOVE;
     private float praiseTimer = 0f;
@@ -92,33 +94,36 @@ public class TutorialScreen extends ScreenAdapter {
 
     public TutorialScreen(GoosePatrolGame game) {
         this.game = game;
+        this.gameViewport = game.getGameViewport();
 
         // The same world as the real game, but with no goose spawner and no way to lose.
-        mapRenderSystem = new MapRenderSystem();
+        mapRenderSystem = new MapRenderSystem(gameViewport);
         gameWorld.addSystem(mapRenderSystem);
 
-        decorationRenderSystem = new DecorationRenderSystem();
+        decorationRenderSystem = new DecorationRenderSystem(gameViewport);
         gameWorld.addSystem(decorationRenderSystem);
 
-        buildingRenderSystem = new BuildingRenderSystem();
+        buildingRenderSystem = new BuildingRenderSystem(gameViewport);
         gameWorld.addSystem(buildingRenderSystem);
 
         gameWorld.addSystem(new PlayerInputSystem());
         gameWorld.addSystem(new GooseBehaviourSystem(session));
         gameWorld.addSystem(new MovementSystem());
-        gameWorld.addSystem(new CampusCollisionSystem());
-        gameWorld.addSystem(new BoundarySystem());
+        gameWorld.addSystem(new CampusCollisionSystem(gameViewport));
+        gameWorld.addSystem(new BoundarySystem(gameViewport));
 
-        gooseRenderSystem = new GooseRenderSystem();
+        gooseRenderSystem = new GooseRenderSystem(gameViewport);
         gameWorld.addSystem(gooseRenderSystem);
 
         player = PlayerFactory.createPlayer(entityFactory);
+        player.getComponent(PositionComponent.class).setPosition(
+        gameViewport.getWorldWidth() / 2f, gameViewport.getWorldHeight() / 2f);
         gameWorld.addEntity(player);
 
-        playerRenderSystem = new PlayerRenderSystem();
+        playerRenderSystem = new PlayerRenderSystem(gameViewport);
         gameWorld.addSystem(playerRenderSystem);
 
-        hud = new HUD();
+        hud = new HUD(gameViewport);
 
         // The practice session counts as running, so the HUD shows no pause message.
         session.togglePause();
@@ -137,7 +142,9 @@ public class TutorialScreen extends ScreenAdapter {
             return;
         }
 
+
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
+        gameViewport.apply();
 
         PositionComponent position = player.getComponent(PositionComponent.class);
 
@@ -225,7 +232,7 @@ public class TutorialScreen extends ScreenAdapter {
 
     /** Bring in one slow goose a short walk away from the player. */
     private void spawnGoose(PositionComponent position) {
-        float width = Gdx.graphics.getWidth();
+        float width = gameViewport.getWorldWidth();
 
         // It appears on whichever side of the player has more room.
         float x = position.getX() < width / 2f
@@ -283,14 +290,16 @@ public class TutorialScreen extends ScreenAdapter {
 
     /** Draw the instruction panel across the upper part of the screen. */
     private void drawPanel() {
-        float width = Gdx.graphics.getWidth();
-        float height = Gdx.graphics.getHeight();
+        float width = gameViewport.getWorldWidth();
+        float height = gameViewport.getWorldHeight();
 
         float panelX = PANEL_MARGIN;
         float panelWidth = width - 2 * PANEL_MARGIN;
         float panelY = height * 0.62f;
 
         // Blending lets the map show faintly through the panel.
+        shapes.setProjectionMatrix(gameViewport.getCamera().combined);
+        batch.setProjectionMatrix(gameViewport.getCamera().combined);
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shapes.begin(ShapeRenderer.ShapeType.Filled);
@@ -327,7 +336,7 @@ public class TutorialScreen extends ScreenAdapter {
     /** Draw one line of instruction text in the middle of the screen, at the given height. */
     private void drawCentred(String text, float y) {
         layout.setText(textFont, text);
-        textFont.draw(batch, layout, (Gdx.graphics.getWidth() - layout.width) / 2f, y);
+        textFont.draw(batch, layout, (gameViewport.getWorldWidth() - layout.width) / 2f, y);
     }
 
     @Override

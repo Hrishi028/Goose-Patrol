@@ -1,6 +1,6 @@
 package com.goosepatrol.game.systems;
 
-import com.badlogic.gdx.Gdx;
+
 import com.badlogic.gdx.math.MathUtils;
 import com.goosepatrol.game.components.GooseComponent;
 import com.goosepatrol.game.ecs.Entity;
@@ -8,6 +8,7 @@ import com.goosepatrol.game.ecs.EntityFactory;
 import com.goosepatrol.game.ecs.GameSystem;
 import com.goosepatrol.game.ecs.GameWorld;
 import com.goosepatrol.game.entities.GooseFactory;
+import com.goosepatrol.game.GameViewport;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,8 +86,8 @@ public class GooseSpawnSystem implements GameSystem {
      * Positions are worked out from the screen size.
      */
     private float[] randomSpawnPoint() {
-        float w = Gdx.graphics.getWidth();
-        float h = Gdx.graphics.getHeight();
+        float w = GameViewport.WORLD_WIDTH;
+        float h = GameViewport.WORLD_HEIGHT;
 
         float[][] points = {
             {w * 0.715f, h * 0.665f},    //the lake (matches CampusCollisionSystem)

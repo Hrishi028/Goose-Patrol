@@ -133,11 +133,11 @@ public class GameScreen extends ScreenAdapter
 
             if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1))
             {
-                session.getInventory().use(0, gameWorld, position.getX(), position.getY());
+                session.useItem(0, gameWorld, position.getX(), position.getY());
             }
             if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2))
             {
-                session.getInventory().use(1, gameWorld, position.getX(), position.getY());
+                session.useItem(1, gameWorld, position.getX(), position.getY());
             }
         }
         session.update(delta);
@@ -146,6 +146,10 @@ public class GameScreen extends ScreenAdapter
         gameWorld.update(session.isRunning()?delta:0f);
 
         hud.draw(session);
+        if(session.hasEnded())
+        {
+            game.showEndScreen(session);
+        }
 
 
     }

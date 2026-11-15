@@ -1,6 +1,10 @@
 package com.goosepatrol.game.session;
 import com.goosepatrol.game.items.Bread;
 import com.goosepatrol.game.items.Umbrella;
+import com.goosepatrol.game.items.Item;
+import com.goosepatrol.game.ecs.GameWorld;
+import java.util.ArrayList;
+import java.util.List;
 /*holds the rules of one playthrough, its state and its timer */
 public class GameSession 
 {
@@ -13,12 +17,16 @@ public class GameSession
   
   private int geeseDispersed = 0;
   private final Inventory inventory = new Inventory();
-
+  private final StatsTracker stats = new StatsTracker();
+  private final List<GameListener> listeners = new ArrayList<>();
   public GameSession()
   {
     inventory.add(new Bread());
     
     inventory.add(new Umbrella(stress));
+
+
+    listeners.add(stats);
   }
 
   /*called once every frame */
@@ -74,6 +82,7 @@ public class GameSession
     stress.reset();
     geeseDispersed=0;
     inventory.reset();
+    stats.reset();
   }
   /*true once the game is finished regardless of the outcome */
   public boolean hasEnded()
@@ -110,6 +119,39 @@ public class GameSession
   public GameTimer getTimer()
   {
     return timer;
+  }
+    /*using the item in the given slot and telling every listener if it worked */
+  public boolean useItem(int slot, GameWorld world, float x, float y)
+  {
+    if (!inventory.use(slot, world, x, y))
+    {
+        return false;
+    }
+    Item item = inventory.getItems().get(slot);
+    for (GameListener listener : listeners)
+    {
+        listener.onItemUsed(item);
+    }
+    return true;
+  }
+
+  /*called by a hidden event when it is triggered */
+  public void eventTriggered(String eventName)
+  {
+    for (GameListener listener : listeners)
+    {
+        listener.onEventTriggered(eventName);
+    }
+  }
+
+  public void addListener(GameListener listener)
+  {
+    listeners.add(listener);
+  }
+
+  public StatsTracker getStats()
+  {
+    return stats;
   }
   public Inventory getInventory()
   {

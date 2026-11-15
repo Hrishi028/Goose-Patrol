@@ -4,5 +4,6 @@ public enum ScreenType
 {
     MENU,
     TUTORIAL,
-    GAME
+    GAME,
+    END
 }

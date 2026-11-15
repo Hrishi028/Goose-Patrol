@@ -7,10 +7,15 @@ import com.goosepatrol.game.screens.GameScreen;
 import com.goosepatrol.game.screens.ScreenType;
 import com.goosepatrol.game.screens.MenuScreen;
 import com.goosepatrol.game.screens.TutorialScreen;
+import com.goosepatrol.game.screens.EndScreen;
+import com.goosepatrol.game.session.GameSession;
 
 public class GoosePatrolGame extends Game {
 
     private GameViewport gameViewport;
+
+    //when the game that has finished the review screen can show its result
+    private GameSession finishedSession;
 
     @Override
     public void create() {
@@ -34,6 +39,9 @@ public class GoosePatrolGame extends Game {
             case TUTORIAL:
                 setScreen(new TutorialScreen(this));
                 break;
+            case END:
+                setScreen(new EndScreen(this, finishedSession));
+                break;
 
             case MENU:
             default:
@@ -44,6 +52,12 @@ public class GoosePatrolGame extends Game {
         if (previous != null) {
             previous.dispose();
         }
+    }
+    /*showing the review scren for a game that has just finished */
+    public void showEndScreen(GameSession session)
+    {
+        finishedSession=session;
+        showScreen(ScreenType.END);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.goosepatrol.game.systems;
 
-
 import com.badlogic.gdx.math.MathUtils;
 import com.goosepatrol.game.components.GooseComponent;
 import com.goosepatrol.game.ecs.Entity;
@@ -13,8 +12,9 @@ import com.goosepatrol.game.GameViewport;
 import java.util.ArrayList;
 import java.util.List;
 
-/**Creates new geese over time. The gap between spawns gets shorter as the
+/**Creates new geese over time. The gap between spawns gets shorter as the game goes on.
  *The more time that has passed, the more often new geese arrive.
+ *Longboi, the boss goose, also arrives once at a random time.
  */
 public class GooseSpawnSystem implements GameSystem {
 
@@ -29,6 +29,13 @@ public class GooseSpawnSystem implements GameSystem {
     private float timeUntilNextSpawn = FIRST_SPAWN_DELAY;
     private float elapsed = 0f;
 
+    //Longboi arrives once at a random time between these two (in seconds).
+    private static final float LONGBOI_EARLIEST = 60f;
+    private static final float LONGBOI_LATEST = 120f;
+
+    private float longboiSpawnTime = MathUtils.random(LONGBOI_EARLIEST, LONGBOI_LATEST);
+    private boolean longboiSpawned = false;
+
     public GooseSpawnSystem(EntityFactory entityFactory) {
         this.entityFactory = entityFactory;
     }
@@ -36,13 +43,20 @@ public class GooseSpawnSystem implements GameSystem {
     @Override
     public void update(GameWorld world, float deltaTime) {
 
-        //deltaTime is 0 while paused or after the game ends, so nothing spawns.
+        //deltaTime is 0 while paused or after the game ends so nothing spawns.
         if (deltaTime <= 0f) {
             return;
         }
 
         elapsed += deltaTime;
         timeUntilNextSpawn -= deltaTime;
+
+        //Longboi turns up once at his random time.
+        if (!longboiSpawned && elapsed >= longboiSpawnTime) {
+            float[] point = randomSpawnPoint();
+            world.addEntity(GooseFactory.createLongboi(entityFactory, point[0], point[1]));
+            longboiSpawned = true;
+        }
 
         if (timeUntilNextSpawn > 0f) {
             return;
@@ -56,7 +70,7 @@ public class GooseSpawnSystem implements GameSystem {
         timeUntilNextSpawn = Math.max(MIN_INTERVAL, START_INTERVAL - elapsed * SPEED_UP_RATE);
     }
 
-    /**Removes every goose and starts the spawn timer again. Call this on restart.*/
+    /**Removes every goose and starts the spawn timer again.*/
     public void reset(GameWorld world) {
         List<Entity> geese = new ArrayList<>();
         for (Entity entity : world.getEntities()) {
@@ -69,6 +83,8 @@ public class GooseSpawnSystem implements GameSystem {
         }
         elapsed = 0f;
         timeUntilNextSpawn = FIRST_SPAWN_DELAY;
+        longboiSpawned = false;
+        longboiSpawnTime = MathUtils.random(LONGBOI_EARLIEST, LONGBOI_LATEST);
     }
 
     private int countGeese(GameWorld world) {
@@ -83,7 +99,7 @@ public class GooseSpawnSystem implements GameSystem {
 
     /**
      * Geese arrive from the lake or from the middle of one of the screen edges.
-     * Positions are worked out from the screen size.
+     * Positions are worked out from the game world size.
      */
     private float[] randomSpawnPoint() {
         float w = GameViewport.WORLD_WIDTH;

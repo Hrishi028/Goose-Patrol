@@ -16,11 +16,9 @@ import com.goosepatrol.game.session.GameSession;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Decides what every goose does each frame.
- * CHASING -> (item/event) -> DISTRACTED -> back to CHASING or LEAVING if full.
- * Only sets each goose's speed. MovementSystem does the moving.
- */
+/**Decides what every goose does each frame.
+ *Longboi chases for a while, then leaves on his own.
+ *Only sets each goose's speed.*/
 public class GooseBehaviourSystem implements GameSystem {
 
     private static final float WOBBLE = 0.35f;    //random wiggle while chasing
@@ -28,6 +26,7 @@ public class GooseBehaviourSystem implements GameSystem {
     private static final float LEAVE_SPEED_FACTOR = 1.3f;
     private static final float OFF_SCREEN_MARGIN = 40f;    //how far past the edge counts as gone
     private static final float EDGE_PADDING = 16f;    //keeps non-leaving geese on screen
+    private static final float LONGBOI_STAY_SECONDS = 40f;    //Longboi chases for this long, then leaves
 
     private final GameSession session;
     private final Vector2 direction = new Vector2();
@@ -39,7 +38,7 @@ public class GooseBehaviourSystem implements GameSystem {
     @Override
     public void update(GameWorld world, float deltaTime) {
 
-        //Paused or game over: do nothing, so the geese stay where they are.
+        //When I was paused or game over, do nothing, so the geese stay where they are.
         if (deltaTime <= 0f) {
             return;
         }
@@ -72,6 +71,14 @@ public class GooseBehaviourSystem implements GameSystem {
                 case CHASING:
                     chase(goose, position, velocity, player);
                     keepOnScreen(position, w, h);
+
+                    //Longboi only chases for a while, then wanders off.
+                    if (goose.isBoss()) {
+                        goose.addTimeOnMap(deltaTime);
+                        if (goose.getTimeOnMap() >= LONGBOI_STAY_SECONDS) {
+                            goose.setState(GooseState.LEAVING);
+                        }
+                    }
                     break;
 
                 case DISTRACTED:
@@ -97,8 +104,11 @@ public class GooseBehaviourSystem implements GameSystem {
         }
 
         for (Entity entity : gone) {
+            boolean boss = entity.getComponent(GooseComponent.class).isBoss();
             world.removeEntity(entity);
-            session.gooseDispersed();    //updates the HUD count and checks for a win
+            if (!boss) {
+                session.gooseDispersed();    //updates the HUD count and checks for a win (Longboi doesn't count)
+            }
         }
     }
 
@@ -113,7 +123,7 @@ public class GooseBehaviourSystem implements GameSystem {
             return;
         }
 
-        direction.nor(); //keep only the direction (length 1)
+        direction.nor();    //keep only the direction 
         direction.add(MathUtils.random(-WOBBLE, WOBBLE), MathUtils.random(-WOBBLE, WOBBLE)).nor();
 
         velocity.setVelocity(direction.x * goose.getSpeed(), direction.y * goose.getSpeed());

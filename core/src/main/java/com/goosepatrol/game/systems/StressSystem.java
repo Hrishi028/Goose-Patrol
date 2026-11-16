@@ -1,3 +1,4 @@
+
 package com.goosepatrol.game.systems;
 
 import com.goosepatrol.game.components.GooseComponent;
@@ -10,12 +11,13 @@ import com.goosepatrol.game.ecs.GameWorld;
 import com.goosepatrol.game.session.GameSession;
 
 /**Raises the player's stress bar while chasing geese are right next to them.
- * The more geese on the player, the faster it rises.
+ * The more geese on the player, the faster it rises. Longboi counts as more than one goose.
  */
 public class StressSystem implements GameSystem {
 
     private static final float ATTACK_RANGE = 40f;    //how close counts as "on you"
     private static final float STRESS_PER_GOOSE_PER_SECOND = 6f;
+    private static final int LONGBOI_STRESS_MULTIPLIER = 2;    //Longboi is as stressful as 2 geese
 
     private final GameSession session;
 
@@ -61,7 +63,7 @@ public class StressSystem implements GameSystem {
             float dy = position.getY() - player.getY();
 
             if (dx * dx + dy * dy <= ATTACK_RANGE * ATTACK_RANGE) {
-                geeseOnPlayer++;
+                geeseOnPlayer += goose.isBoss() ? LONGBOI_STRESS_MULTIPLIER : 1;
             }
         }
 

@@ -132,14 +132,6 @@ public class GameScreen extends ScreenAdapter
             restart();
 
         }
-        if (session.isRunning() && Gdx.input.isKeyJustPressed(Input.Keys.K))
-        {
-            session.getStress().add(10f);
-        }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.G))
-        {
-            session.gooseDispersed();
-        }
        
         //the number keys use the item in that inventory slot
         if (session.isRunning())

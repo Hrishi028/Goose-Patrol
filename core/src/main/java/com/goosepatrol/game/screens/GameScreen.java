@@ -31,12 +31,17 @@ import com.goosepatrol.game.systems.GooseRenderSystem;
 import com.goosepatrol.game.systems.GooseSpawnSystem;
 import com.goosepatrol.game.systems.StressSystem;
 import com.goosepatrol.game.GameViewport;
+import com.goosepatrol.game.systems.EventTriggerSystem;
+import com.goosepatrol.game.entities.HiddenEventFactory;
+import com.goosepatrol.game.events.BreadVanEvent;
+import com.goosepatrol.game.systems.BreadVanRenderSystem;
 
 /*the screen where the game is played */
 
 public class GameScreen extends ScreenAdapter
 {
     private GooseRenderSystem gooseRenderSystem;
+    private BreadVanRenderSystem breadVanRenderSystem;
     private final GoosePatrolGame game;
     private final GameViewport gameViewport;
 
@@ -77,8 +82,13 @@ public class GameScreen extends ScreenAdapter
         gameWorld.addSystem(new CampusCollisionSystem(gameViewport));
         gameWorld.addSystem(new BoundarySystem(gameViewport));
         gameWorld.addSystem(new StressSystem(session));
+        gameWorld.addSystem(new EventTriggerSystem(session));
 
-        // Geese are drawn before the player, so the player overlaps them.
+        //The bread van is drawn first, so geese and the player appear in front of it.
+        breadVanRenderSystem = new BreadVanRenderSystem(gameViewport);
+        gameWorld.addSystem(breadVanRenderSystem);
+
+        //Geese are drawn before the player, so the player overlaps them.
         gooseRenderSystem = new GooseRenderSystem(gameViewport);
         gameWorld.addSystem(gooseRenderSystem);
 
@@ -87,13 +97,18 @@ public class GameScreen extends ScreenAdapter
 
         gameWorld.addEntity(player);
 
+        //Hidden event (helpful): an invisible Bread Van spot on the path at the bottom of the campus.
+        //It can be triggered after 30 seconds of play, by walking within 60 units of it.
+        gameWorld.addEntity(HiddenEventFactory.createHiddenEvent(entityFactory, new BreadVanEvent(),
+        gameViewport.getWorldWidth() * 0.50f, gameViewport.getWorldHeight() * 0.15f, 60f, 30f));
+
         playerRenderSystem = new PlayerRenderSystem(gameViewport);
         gameWorld.addSystem(playerRenderSystem);
 
         hud = new HUD(gameViewport);
     }
 
-    /*getting called by LibGDX once every frame while this screen is showing */
+    /*called by LibGDX once every frame while this screen is showing */
     @Override
     public void render(float delta)
     {
@@ -172,6 +187,7 @@ public class GameScreen extends ScreenAdapter
         decorationRenderSystem.dispose();
         hud.dispose();
         gooseRenderSystem.dispose();
+        breadVanRenderSystem.dispose();
     }
 
 }

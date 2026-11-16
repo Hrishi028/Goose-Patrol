@@ -28,7 +28,10 @@ public class GameTimer
    {
     return secondsLeft<=0f;
    }
-
+   public float getElapsedSeconds()
+   {
+      return startSeconds - secondsLeft;
+   }
    public float getSecondsLeft()
    {
     return secondsLeft;
